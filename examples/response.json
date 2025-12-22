@@ -1,0 +1,10 @@
+{
+  "name": "myapp",
+  "version": "1.0.0",
+  "description": "My application",
+  "timestamp": "2025-01-15T10:30:00Z",
+  "build": {
+    "number": 42,
+    "commit": "abc123"
+  }
+}
