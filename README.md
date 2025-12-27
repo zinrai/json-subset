@@ -62,12 +62,15 @@ json-subset does one thing: subset checking with clear difference output.
 $ json-subset required.json response.json
 FAIL: First JSON is not a subset of second JSON.
 
-Differences:
-  $.user.email: missing key in superset
-  $.tags[2]: element not found in superset array: "admin"
+ {
+   "user": {
+-    "email": "alice@example.com",
+     "name": "alice"
+   }
+ }
 ```
 
-When validation fails, you immediately see what's wrong.
+When validation fails, you immediately see what's wrong. The `-` marker shows which fields are missing or have mismatched values.
 
 ### Tool Responsibilities
 
@@ -164,42 +167,95 @@ Subset checking works recursively for nested objects and arrays.
 
 ## Difference Output
 
-When the subset check fails, json-subset shows which parts of the first JSON are not contained in the second:
+When the subset check fails, json-subset displays the subset JSON with diff markers. Lines prefixed with `-` indicate missing keys or mismatched values:
 
 ```
 FAIL: First JSON is not a subset of second JSON.
 
-Differences:
-  $.user.email: missing key in superset
-  $.tags[2]: element not found in superset array: "admin"
+ {
+-  "license": "MIT",
+   "name": "myapp",
+   "version": "1.0.0"
+ }
+```
+
+For nested structures:
+
+```
+FAIL: First JSON is not a subset of second JSON.
+
+ {
+   "user": {
+-    "email": "alice@example.com",
+     "name": "alice"
+   }
+ }
+```
+
+For arrays:
+
+```
+FAIL: First JSON is not a subset of second JSON.
+
+ {
+   "tags": [
+     "production",
+     "stable",
+-    "admin"
+   ]
+ }
 ```
 
 ## Examples
 
-The `example/` directory contains sample JSON files for testing:
+The `examples/` directory contains sample JSON files for testing:
 
 Success case: required fields exist in response:
 
 ```bash
-json-subset example/required.json example/response.json
+json-subset examples/required.json examples/response.json
 ```
 
 Failure case: required field missing:
 
 ```bash
-$ json-subset example/required_with_missing.json example/response.json
+$ json-subset examples/required_with_missing.json examples/response.json
 ```
 
 Array subset (order ignored):
 
 ```bash
-$ json-subset example/required_tags.json example/actual_tags.json
+$ json-subset examples/required_tags.json examples/actual_tags.json
 ```
 
 Nested object subset:
 
 ```bash
-$ json-subset example/required_nested.json example/response_nested.json
+$ json-subset examples/required_nested.json examples/response_nested.json
+```
+
+Complex API response with multiple missing fields:
+
+```bash
+$ json-subset examples/required_api_response.json examples/actual_api_response.json
+FAIL: First JSON is not a subset of second JSON.
+
+ {
+   "data": {
+-    "permissions": [
+-      "read",
+-      "write"
+-    ],
+     "user": {
+       "id": 123,
+       "profile": {
+-        "email": "alice@example.com",
+         "name": "alice"
+       }
+     }
+   },
+   "status": "success"
+ }
 ```
 
 ## License

@@ -1,0 +1,13 @@
+{
+  "status": "success",
+  "data": {
+    "user": {
+      "id": 123,
+      "profile": {
+        "name": "alice",
+        "email": "alice@example.com"
+      }
+    },
+    "permissions": ["read", "write"]
+  }
+}

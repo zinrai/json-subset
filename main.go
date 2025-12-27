@@ -40,7 +40,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return exitError
 	}
 
-	isSubset, diffs := checkSubset(subsetData, supersetData)
+	isSubset, diffs := checkSubsetWithDiffs(subsetData, supersetData)
 
 	if isSubset {
 		fmt.Fprintln(stdout, "OK: First JSON is a subset of second JSON.")
@@ -49,30 +49,25 @@ func run(args []string, stdout, stderr io.Writer) int {
 
 	fmt.Fprintln(stderr, "FAIL: First JSON is not a subset of second JSON.")
 	fmt.Fprintln(stderr, "")
-	fmt.Fprintln(stderr, "Differences:")
-	for _, diff := range diffs {
-		fmt.Fprintf(stderr, "  %s\n", diff)
-	}
+	diffOutput := FormatDiffOutput(subsetData, diffs)
+	fmt.Fprint(stderr, diffOutput)
 	return exitFailure
 }
 
 func loadJSON(filename string) (interface{}, error) {
-	var reader io.Reader
+	var data []byte
+	var err error
 
 	if filename == "-" {
-		reader = os.Stdin
-	} else {
-		file, err := os.Open(filename)
+		data, err = io.ReadAll(os.Stdin)
 		if err != nil {
 			return nil, err
 		}
-		defer file.Close()
-		reader = file
-	}
-
-	data, err := io.ReadAll(reader)
-	if err != nil {
-		return nil, err
+	} else {
+		data, err = os.ReadFile(filename)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	var result interface{}
