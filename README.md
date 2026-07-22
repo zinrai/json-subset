@@ -80,12 +80,6 @@ When validation fails, you immediately see what's wrong. The `-` marker shows wh
 | JSON transformation/filtering | jq          |
 | Subset validation with diff   | json-subset |
 
-## Installation
-
-```bash
-$ go install github.com/zinrai/json-subset@latest
-```
-
 ## Usage
 
 ```bash
